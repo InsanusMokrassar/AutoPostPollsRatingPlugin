@@ -3,6 +3,7 @@ package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsRatingsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsMessagesTable
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.FinalConfig
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.PluginManager
@@ -17,7 +18,8 @@ import kotlinx.serialization.Transient
 class PollRatingPlugin(
     @Serializable(RatingsVariantsSerializer::class)
     private val ratingVariants: RatingsVariants,
-    private val text: String = "How do you like it?"
+    private val text: String = "How do you like it?",
+    private val autoAttach: Boolean = false
 ) : MutableRatingPlugin {
     @Transient
     private val pollsRatingsTable = PollsRatingsTable()
@@ -53,6 +55,13 @@ class PollRatingPlugin(
                 pollsRatingsTable,
                 pollsMessagesTable
             )
+
+            if (autoAttach) {
+                enableAutoEnablingOfPolls(
+                    PostsTable,
+                    this@PollRatingPlugin
+                )
+            }
         }
     }
 

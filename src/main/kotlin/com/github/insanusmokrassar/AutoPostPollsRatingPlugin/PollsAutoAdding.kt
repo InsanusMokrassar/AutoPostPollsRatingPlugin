@@ -2,6 +2,8 @@ package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
 
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsMessagesTable
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
 import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
 import com.github.insanusmokrassar.TelegramBotAPI.requests.DeleteMessage
@@ -12,7 +14,17 @@ import com.github.insanusmokrassar.TelegramBotAPI.types.message.abstracts.Conten
 import com.github.insanusmokrassar.TelegramBotAPI.types.message.content.PollContent
 import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.executeUnsafe
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
+
+internal fun CoroutineScope.enableAutoEnablingOfPolls(
+    postsTable: PostsTable,
+    ratingPlugin: MutableRatingPlugin
+): Job = launch {
+    postsTable.postMessageRegisteredChannel.asFlow().collect {
+        ratingPlugin.addRatingFor(it.first)
+    }
+}
 
 internal fun CoroutineScope.enableAutoaddingOfPolls(
     executor: RequestsExecutor,
