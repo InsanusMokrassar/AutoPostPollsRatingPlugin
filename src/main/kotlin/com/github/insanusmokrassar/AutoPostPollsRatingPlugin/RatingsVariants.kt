@@ -1,3 +1,5 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
 
-typealias RatingsVariants = Map<String, Int>
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.Rating
+
+typealias RatingsVariants = Map<String, Rating>
