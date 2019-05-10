@@ -16,17 +16,14 @@ import org.jetbrains.exposed.sql.SchemaUtils
 
 @Serializable
 class PollRatingPlugin(
-    ratingVariants: RatingsVariants,
+    @Serializable(RatingsVariantsSerializer::class)
+    private val ratingVariants: RatingsVariants,
     private val text: String = "How do you like it?"
 ) : MutableRatingPlugin {
     @Transient
     private val pollsRatingsTable = PollsRatingsTable()
     @Transient
     private val pollsMessagesTable = PollsMessagesTable()
-    @Transient
-    private val adaptedRatingVariants = ratingVariants.asSequence().associate { (originalText, rating) ->
-        "$originalText ($rating)" to rating
-    }
 
     init {
         SchemaUtils.createMissingTablesAndColumns(
@@ -37,6 +34,10 @@ class PollRatingPlugin(
 
     override suspend fun onInit(executor: RequestsExecutor, baseConfig: FinalConfig, pluginManager: PluginManager) {
         super.onInit(executor, baseConfig, pluginManager)
+        val adaptedRatingVariants = ratingVariants.asSequence().associate { (originalText, rating) ->
+            "$originalText ($rating)" to rating
+        }
+
         NewDefaultCoroutineScope(3).apply {
             enableAutoremovingOfPolls(
                 executor,
