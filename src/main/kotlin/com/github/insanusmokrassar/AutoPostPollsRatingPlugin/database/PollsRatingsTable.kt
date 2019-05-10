@@ -20,6 +20,10 @@ internal class PollsRatingsTable : Table() {
      */
     private val ratingColumn = integer("rating").default(0)
 
+    init {
+        SchemaUtils.createMissingTablesAndColumns(this)
+    }
+
     operator fun contains(postId: PostId): Boolean = transaction {
         select {
             postIdColumn.eq(postId)

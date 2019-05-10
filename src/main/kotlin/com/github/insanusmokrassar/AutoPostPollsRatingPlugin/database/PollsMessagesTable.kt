@@ -14,6 +14,10 @@ internal class PollsMessagesTable : Table() {
     private val messageIdColumn = long("messageId").uniqueIndex()
     private val pollIdColumn = text("pollId")
 
+    init {
+        SchemaUtils.createMissingTablesAndColumns(this)
+    }
+
     operator fun contains(postId: PostId): Boolean = transaction {
         select {
             postIdColumn.eq(postId)

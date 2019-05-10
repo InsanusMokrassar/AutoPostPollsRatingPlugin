@@ -12,7 +12,6 @@ import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import org.jetbrains.exposed.sql.SchemaUtils
 
 @Serializable
 class PollRatingPlugin(
@@ -24,13 +23,6 @@ class PollRatingPlugin(
     private val pollsRatingsTable = PollsRatingsTable()
     @Transient
     private val pollsMessagesTable = PollsMessagesTable()
-
-    init {
-        SchemaUtils.createMissingTablesAndColumns(
-            pollsMessagesTable,
-            pollsRatingsTable
-        )
-    }
 
     override suspend fun onInit(executor: RequestsExecutor, baseConfig: FinalConfig, pluginManager: PluginManager) {
         super.onInit(executor, baseConfig, pluginManager)
