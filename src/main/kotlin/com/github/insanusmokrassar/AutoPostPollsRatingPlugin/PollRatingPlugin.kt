@@ -2,6 +2,7 @@ package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
 
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsRatingsTable
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsMessagesTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.FinalConfig
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.PluginManager
@@ -11,9 +12,15 @@ import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
 import kotlinx.coroutines.flow.*
 import org.jetbrains.exposed.sql.SchemaUtils
 
-class PollRatingPlugin : MutableRatingPlugin {
+class PollRatingPlugin(
+    ratingVariants: RatingsVariants,
+    private val text: String = "How do you like it?"
+) : MutableRatingPlugin {
     private val pollsRatingsTable = PollsRatingsTable()
     private val pollsMessagesTable = PollsMessagesTable()
+    private val adaptedRatingVariants = ratingVariants.asSequence().associate { (originalText, rating) ->
+        "$originalText ($rating)" to rating
+    }
 
     init {
         SchemaUtils.createMissingTablesAndColumns(
@@ -30,6 +37,16 @@ class PollRatingPlugin : MutableRatingPlugin {
                 baseConfig.sourceChatId,
                 this@PollRatingPlugin,
                 pollsMessagesTable
+            )
+
+            enableAutoaddingOfPolls(
+                executor,
+                baseConfig.sourceChatId,
+                this@PollRatingPlugin,
+                adaptedRatingVariants.map { (text, _) -> text },
+                text,
+                pollsMessagesTable,
+                PostsMessagesTable
             )
         }
     }

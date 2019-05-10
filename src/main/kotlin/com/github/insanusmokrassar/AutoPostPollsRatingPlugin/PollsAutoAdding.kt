@@ -1,0 +1,48 @@
+package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
+
+import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsMessagesTable
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
+import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
+import com.github.insanusmokrassar.TelegramBotAPI.requests.DeleteMessage
+import com.github.insanusmokrassar.TelegramBotAPI.requests.StopPoll
+import com.github.insanusmokrassar.TelegramBotAPI.requests.send.SendPoll
+import com.github.insanusmokrassar.TelegramBotAPI.types.ChatId
+import com.github.insanusmokrassar.TelegramBotAPI.types.message.abstracts.ContentMessage
+import com.github.insanusmokrassar.TelegramBotAPI.types.message.content.PollContent
+import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.executeUnsafe
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
+
+internal fun CoroutineScope.enableAutoaddingOfPolls(
+    executor: RequestsExecutor,
+    chatId: ChatId,
+    ratingPlugin: RatingPlugin,
+    options: List<String>,
+    text: String,
+    pollsMessagesTable: PollsMessagesTable,
+    postsMessagesTable: PostsMessagesTable
+): Job = launch {
+    val sendPoll = SendPoll(
+        chatId,
+        text,
+        options
+    )
+    ratingPlugin.allocateRatingAddedFlow().collect { (postId, _) ->
+        val firstPostMessageId = postsMessagesTable.getMessagesOfPost(postId).firstOrNull()
+
+        if (firstPostMessageId == null || postId in pollsMessagesTable) {
+            return@collect
+        }
+
+        (executor.executeUnsafe(
+            sendPoll,
+            3
+        ) as? ContentMessage<*>) ?.let {
+            val pollContent = it.content as? PollContent ?: return@collect
+            val poll = pollContent.poll
+
+            pollsMessagesTable.registerPoll(postId, it.messageId, poll.id)
+        }
+    }
+}
