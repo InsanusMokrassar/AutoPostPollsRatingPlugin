@@ -31,7 +31,7 @@ class PollRatingPlugin(
 
     override suspend fun onInit(executor: RequestsExecutor, baseConfig: FinalConfig, pluginManager: PluginManager) {
         super.onInit(executor, baseConfig, pluginManager)
-        NewDefaultCoroutineScope().apply {
+        NewDefaultCoroutineScope(3).apply {
             enableAutoremovingOfPolls(
                 executor,
                 baseConfig.sourceChatId,
@@ -47,6 +47,12 @@ class PollRatingPlugin(
                 text,
                 pollsMessagesTable,
                 PostsMessagesTable
+            )
+
+            enableRatingUpdatesByPolls(
+                adaptedRatingVariants,
+                pollsRatingsTable,
+                pollsMessagesTable
             )
         }
     }

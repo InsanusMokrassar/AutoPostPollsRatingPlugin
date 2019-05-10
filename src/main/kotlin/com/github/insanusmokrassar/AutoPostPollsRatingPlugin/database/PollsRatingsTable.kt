@@ -62,6 +62,8 @@ internal class PollsRatingsTable : Table() {
         }
     }
 
+    operator fun set(postId: PostId, rating: Rating): Boolean = updateRating(postId, rating)
+
     fun disableRating(postId: PostId): Rating? = transaction {
         get(postId) ?.also {
             deleteWhere {
