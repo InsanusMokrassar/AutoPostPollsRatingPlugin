@@ -16,8 +16,6 @@ internal class PollsRatingsTable : Table() {
     private val postIdColumn = integer("postId").primaryKey()
 
     /**
-     * Percentage * 100
-     *
      * For case, of rating 56.23, will be stored 5623
      */
     private val ratingColumn = integer("rating").default(0)
@@ -48,7 +46,7 @@ internal class PollsRatingsTable : Table() {
                 postIdColumn.eq(postId)
             }
         ) {
-            it[ratingColumn] = (rating * 1000).toInt()
+            it[ratingColumn] = (rating * 100).toInt()
         } > 0
     }.also {
         if (it) {
@@ -60,7 +58,7 @@ internal class PollsRatingsTable : Table() {
         select {
             postIdColumn.eq(postId)
         }.firstOrNull() ?.get(ratingColumn) ?.let {
-            it.toFloat() / 1000
+            it.toFloat() / 100
         }
     }
 
