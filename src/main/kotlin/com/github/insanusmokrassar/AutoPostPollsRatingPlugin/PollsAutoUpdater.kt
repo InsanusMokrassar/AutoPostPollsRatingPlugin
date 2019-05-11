@@ -15,7 +15,7 @@ internal fun CoroutineScope.enableRatingUpdatesByPolls(
         val poll = it.data
         pollsMessagesTable[poll.id] ?.let { postId ->
             pollsRatingsTable[postId] = poll.options.sumBy {
-                adaptedVariants[it.text] ?: 0F
+                (adaptedVariants[it.text] ?: 0F) * it.votes
             }
         }
     }
