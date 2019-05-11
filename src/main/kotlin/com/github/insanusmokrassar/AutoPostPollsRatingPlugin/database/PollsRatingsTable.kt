@@ -36,7 +36,8 @@ internal class PollsRatingsTable : Table() {
         if (postId !in this@PollsRatingsTable) {
             insert {
                 it[postIdColumn] = postId
-            }[postIdColumn] == postId
+            }
+            postId in this@PollsRatingsTable
         } else {
             false
         }

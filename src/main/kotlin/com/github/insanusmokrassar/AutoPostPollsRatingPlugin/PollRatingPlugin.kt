@@ -32,12 +32,17 @@ class PollRatingPlugin(
             "$originalText ($rating)" to rating
         }
 
-        NewDefaultCoroutineScope(3).apply {
+        NewDefaultCoroutineScope(5).apply {
             enableAutoremovingOfPolls(
                 executor,
                 baseConfig.sourceChatId,
                 this@PollRatingPlugin,
                 pollsMessagesTable
+            )
+
+            enableAutoremovingOnPostRemoved(
+                this@PollRatingPlugin,
+                PostsTable
             )
 
             enableAutoaddingOfPolls(

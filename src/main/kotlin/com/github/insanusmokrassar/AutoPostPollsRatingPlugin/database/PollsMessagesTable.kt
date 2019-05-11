@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 internal typealias MessageIdToPollIdPair = Pair<MessageIdentifier, PollIdentifier>
 
 internal class PollsMessagesTable : Table() {
-    private val postIdColumn = integer("postId").primaryKey()
+    private val postIdColumn = integer("postId").uniqueIndex()
     private val messageIdColumn = long("messageId").uniqueIndex()
     private val pollIdColumn = text("pollId")
 
@@ -32,7 +32,8 @@ internal class PollsMessagesTable : Table() {
                 it[postIdColumn] = postId
                 it[messageIdColumn] = messageId
                 it[pollIdColumn] = pollId
-            }[postIdColumn] == postId
+            }
+            postId in this@PollsMessagesTable
         } else {
             false
         }
