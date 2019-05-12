@@ -24,7 +24,7 @@ internal fun CoroutineScope.enableEnableRatingCommand(
     }
 }
 
-internal fun CoroutineScope.disableEnableRatingCommand(
+internal fun CoroutineScope.enableDisableRatingCommand(
     ratingPlugin: MutableRatingPlugin,
     postsTable: PostsTable
 ): Job = launch {

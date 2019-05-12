@@ -13,7 +13,7 @@ import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.executeUnsafe
 import kotlinx.coroutines.*
 import java.lang.ref.WeakReference
 
-private val getRatingsRegex = Regex("(^rating$)|(^availableRatings$)|(^getRatings$)")
+private val getRatingsRegex = Regex("(^ratings$)|(^availableRatings$)|(^getRatings$)")
 
 internal fun CoroutineScope.enableGetRatingsCommand(
     executorWR: WeakReference<RequestsExecutor>,
@@ -37,11 +37,16 @@ internal fun CoroutineScope.enableGetRatingsCommand(
                 ratingsTable[rating] = ratingsTable[rating] ?.plus(1) ?: 1
             }
 
-            ratingsTable.forEach { (rating, count) ->
-                messageBuilder.append("\t$rating: $count")
+            messageBuilder.append("\n```\n")
+            ratingsTable.asSequence().sortedBy {
+                it.key
+            }.toList().forEach { (rating, count) ->
+                messageBuilder.append("$rating: $count\n")
             }
+            messageBuilder.append("\n```\n")
 
-            messageBuilder.append("Average rating: ${ratingsTable.keys.average()}; Ratings count: ${averageRatings.size}")
+            messageBuilder.append("Ratings average: ${averageRatings.values.average()};\n")
+            messageBuilder.append("Ratings count:   ${averageRatings.size};\n")
 
             executor.executeUnsafe(
                 SendMessage(

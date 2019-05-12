@@ -1,5 +1,8 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
 
+import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.commands.*
+import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.commands.enableDisableRatingCommand
+import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.commands.enableEnableRatingCommand
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsRatingsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsMessagesTable
@@ -10,6 +13,7 @@ import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.PluginManage
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.NewDefaultCoroutineScope
 import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
+import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.asReference
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -32,7 +36,7 @@ class PollRatingPlugin(
             "$originalText ($rating)" to rating
         }
 
-        NewDefaultCoroutineScope(5).apply {
+        NewDefaultCoroutineScope(8).apply {
             enableAutoremovingOfPolls(
                 executor,
                 baseConfig.sourceChatId,
@@ -59,6 +63,21 @@ class PollRatingPlugin(
                 adaptedRatingVariants,
                 pollsRatingsTable,
                 pollsMessagesTable
+            )
+
+            enableEnableRatingCommand(
+                this@PollRatingPlugin,
+                PostsTable
+            )
+
+            enableDisableRatingCommand(
+                this@PollRatingPlugin,
+                PostsTable
+            )
+
+            enableGetRatingsCommand(
+                executor.asReference(),
+                this@PollRatingPlugin
             )
 
             if (autoAttach) {
