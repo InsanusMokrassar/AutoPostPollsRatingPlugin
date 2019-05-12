@@ -18,12 +18,15 @@ import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
+internal typealias VariantTransformer = (String) -> Rating?
+
 @Serializable
 class PollRatingPlugin(
     @Serializable(RatingsVariantsSerializer::class)
     private val ratingVariants: RatingsVariants,
     private val text: String = "How do you like it?",
-    private val autoAttach: Boolean = false
+    private val autoAttach: Boolean = false,
+    private val variantsRatings: Boolean = false
 ) : MutableRatingPlugin {
     @Transient
     private val pollsRatingsTable = PollsRatingsTable()
@@ -32,8 +35,17 @@ class PollRatingPlugin(
 
     override suspend fun onInit(executor: RequestsExecutor, baseConfig: FinalConfig, pluginManager: PluginManager) {
         super.onInit(executor, baseConfig, pluginManager)
-        val adaptedRatingVariants = ratingVariants.asSequence().associate { (originalText, rating) ->
-            "$originalText ($rating)" to rating
+        val ratingsTransformers: MutableList<VariantTransformer> = mutableListOf()
+        val fullRatingVariants: RatingsVariants = ratingVariants.asSequence().associate { (originalText, rating) ->
+            "$originalText ($rating)".also { fullText ->
+                ratingsTransformers.add {
+                    if (it == fullText || it == originalText) {
+                        rating
+                    } else {
+                        null
+                    }
+                }
+            } to rating
         }
 
         NewDefaultCoroutineScope(8).apply {
@@ -53,14 +65,18 @@ class PollRatingPlugin(
                 executor,
                 baseConfig.sourceChatId,
                 this@PollRatingPlugin,
-                adaptedRatingVariants.map { (text, _) -> text },
+                (if (variantsRatings) {
+                    fullRatingVariants
+                } else {
+                    ratingVariants
+                }).keys.toList(),
                 text,
                 pollsMessagesTable,
                 PostsMessagesTable
             )
 
             enableRatingUpdatesByPolls(
-                adaptedRatingVariants,
+                ratingsTransformers,
                 pollsRatingsTable,
                 pollsMessagesTable
             )

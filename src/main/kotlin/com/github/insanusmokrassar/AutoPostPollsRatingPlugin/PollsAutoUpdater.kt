@@ -7,15 +7,20 @@ import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErr
 import kotlinx.coroutines.*
 
 internal fun CoroutineScope.enableRatingUpdatesByPolls(
-    adaptedVariants: RatingsVariants,
+    transformers: List<VariantTransformer>,
     pollsRatingsTable: PollsRatingsTable,
     pollsMessagesTable: PollsMessagesTable
 ): Job = launch {
     flowFilter.pollFlow.collectWithErrors {
         val poll = it.data
         pollsMessagesTable[poll.id] ?.let { postId ->
-            pollsRatingsTable[postId] = poll.options.sumBy {
-                (adaptedVariants[it.text] ?: 0F) * it.votes
+            pollsRatingsTable[postId] = poll.options.sumBy { option ->
+                var pollRating = 0F
+                for (transformer in transformers) {
+                    pollRating = transformer(option.text) ?: continue
+                    break
+                }
+                pollRating * option.votes
             }
         }
     }
