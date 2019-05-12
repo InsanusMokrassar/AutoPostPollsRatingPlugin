@@ -20,5 +20,7 @@ object OldRatingsTablePollsTableMigrator {
         ratings.forEach { (ratingId, rating) ->
             pollsRatingsTable[ratingId.asPostId] = rating
         }
+
+        Runtime.getRuntime().exit(0)
     }
 }

@@ -16,10 +16,13 @@ buildscript {
 }
 
 apply plugin: 'java-library'
+apply plugin: 'application'
 apply plugin: 'kotlin'
 apply plugin: 'kotlinx-serialization'
 
 apply from: "publish.gradle"
+
+mainClassName="com.github.insanusmokrassar.AutoPostPollsRatingPlugin.utils.OldRatingsTablePollsTableMigrator"
 
 repositories {
     mavenLocal()
