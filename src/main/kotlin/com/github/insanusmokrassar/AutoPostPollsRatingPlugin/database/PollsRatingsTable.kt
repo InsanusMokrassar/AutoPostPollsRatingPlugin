@@ -1,5 +1,6 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database
 
+import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.*
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.asRatingId
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
@@ -47,13 +48,25 @@ internal class PollsRatingsTable : Table() {
         }
     }
 
+    fun upsertRating(postId: PostId, rating: Rating) = transaction {
+        if (!updateRating(postId, rating)) {
+            insert {
+                it[postIdColumn] = postId
+                it[ratingColumn] = rating.forDatabase
+            }
+            get(postId) == rating
+        } else {
+            true
+        }
+    }
+
     fun updateRating(postId: PostId, rating: Rating): Boolean = transaction {
         update(
             {
                 postIdColumn.eq(postId)
             }
         ) {
-            it[ratingColumn] = (rating * 100).toInt()
+            it[ratingColumn] = rating.forDatabase
         } > 0
     }.also {
         if (it) {
@@ -65,11 +78,11 @@ internal class PollsRatingsTable : Table() {
         select {
             postIdColumn.eq(postId)
         }.firstOrNull() ?.get(ratingColumn) ?.let {
-            it.toFloat() / 100
+            it.asRating
         }
     }
 
-    operator fun set(postId: PostId, rating: Rating): Boolean = updateRating(postId, rating)
+    operator fun set(postId: PostId, rating: Rating): Boolean = upsertRating(postId, rating)
 
     fun disableRating(postId: PostId): Rating? = transaction {
         get(postId) ?.also {
