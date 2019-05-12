@@ -35,7 +35,7 @@ internal fun CoroutineScope.enableAutoremovingOfPolls(
     ratingPlugin.allocateRatingRemovedFlow().collectWithErrors {
         val pollInfo = pollsMessagesTable[it.first.asPostId] ?: return@collectWithErrors
 
-        (executor.executeUnsafe(
+        executor.executeUnsafe(
             DeleteMessage(
                 chatId,
                 pollInfo.first
@@ -47,10 +47,8 @@ internal fun CoroutineScope.enableAutoremovingOfPolls(
                     pollInfo.first
                 )
             )
-        } else {
-            null
-        }) ?.also { _ ->
-            pollsMessagesTable.unregisterPoll(it.first.asPostId)
         }
+
+        pollsMessagesTable.unregisterPoll(it.first.asPostId)
     }
 }
