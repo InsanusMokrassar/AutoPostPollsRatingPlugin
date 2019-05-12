@@ -1,24 +1,40 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.commands
 
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsMessagesTable
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.commands.buildCommandFlow
+import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 
 private val enableRatingCommandRegex = Regex("enableRating")
+private val disableRatingCommandRegex = Regex("disableRating")
 
 internal fun CoroutineScope.enableEnableRatingCommand(
     ratingPlugin: MutableRatingPlugin,
-    postsMessagesTable: PostsMessagesTable
+    postsTable: PostsTable
 ): Job = launch {
     buildCommandFlow(
         enableRatingCommandRegex
-    ).collect {
-        val repliedMessage = it.replyTo ?: return@collect
-        val postId = postsMessagesTable.findPostByMessageId(repliedMessage.messageId) ?: return@collect
+    ).collectWithErrors {
+        val repliedMessage = it.replyTo ?: return@collectWithErrors
+        val postId = postsTable.findPost(repliedMessage.messageId)
         if (ratingPlugin.getPostRatings(postId).isEmpty()) {
             ratingPlugin.addRatingFor(postId)
+        }
+    }
+}
+
+internal fun CoroutineScope.disableEnableRatingCommand(
+    ratingPlugin: MutableRatingPlugin,
+    postsTable: PostsTable
+): Job = launch {
+    buildCommandFlow(
+        disableRatingCommandRegex
+    ).collectWithErrors {
+        val repliedMessage = it.replyTo ?: return@collectWithErrors
+        val postId = postsTable.findPost(repliedMessage.messageId)
+        ratingPlugin.getPostRatings(postId).forEach { (ratingId, _) ->
+            ratingPlugin.deleteRating(ratingId)
         }
     }
 }
