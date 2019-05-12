@@ -5,6 +5,7 @@ import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.Post
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
+import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
 import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
 import com.github.insanusmokrassar.TelegramBotAPI.requests.DeleteMessage
 import com.github.insanusmokrassar.TelegramBotAPI.requests.StopPoll
@@ -15,13 +16,12 @@ import com.github.insanusmokrassar.TelegramBotAPI.types.message.content.PollCont
 import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.executeUnsafe
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
 
 internal fun CoroutineScope.enableAutoEnablingOfPolls(
     postsTable: PostsTable,
     ratingPlugin: MutableRatingPlugin
 ): Job = launch {
-    postsTable.postMessageRegisteredChannel.asFlow().collect {
+    postsTable.postMessageRegisteredChannel.asFlow().collectWithErrors {
         ratingPlugin.addRatingFor(it.first)
     }
 }
@@ -40,18 +40,18 @@ internal fun CoroutineScope.enableAutoaddingOfPolls(
         text,
         options
     )
-    ratingPlugin.allocateRatingAddedFlow().collect { (postId, _) ->
+    ratingPlugin.allocateRatingAddedFlow().collectWithErrors { (postId, _) ->
         val firstPostMessageId = postsMessagesTable.getMessagesOfPost(postId).firstOrNull()
 
         if (firstPostMessageId == null || postId in pollsMessagesTable) {
-            return@collect
+            return@collectWithErrors
         }
 
         (executor.executeUnsafe(
             sendPoll,
             3
         ) ?.asMessage as? ContentMessage<*>) ?.let {
-            val pollContent = it.content as? PollContent ?: return@collect
+            val pollContent = it.content as? PollContent ?: return@collectWithErrors
             val poll = pollContent.poll
 
             pollsMessagesTable.registerPoll(postId, it.messageId, poll.id)

@@ -4,6 +4,7 @@ import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessa
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
+import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
 import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
 import com.github.insanusmokrassar.TelegramBotAPI.requests.DeleteMessage
 import com.github.insanusmokrassar.TelegramBotAPI.requests.StopPoll
@@ -17,7 +18,7 @@ internal fun CoroutineScope.enableAutoremovingOnPostRemoved(
     ratingPlugin: MutableRatingPlugin,
     postsTable: PostsTable
 ): Job = launch {
-    postsTable.postRemovedChannel.asFlow().collect {
+    postsTable.postRemovedChannel.asFlow().collectWithErrors {
         ratingPlugin.getPostRatings(it).forEach {
             ratingPlugin.deleteRating(it.first)
         }
@@ -31,8 +32,8 @@ internal fun CoroutineScope.enableAutoremovingOfPolls(
     pollsMessagesTable: PollsMessagesTable,
     closeIfUnsuccess: Boolean = true
 ): Job = launch {
-    ratingPlugin.allocateRatingRemovedFlow().collect {
-        val pollInfo = pollsMessagesTable[it.first.asPostId] ?: return@collect
+    ratingPlugin.allocateRatingRemovedFlow().collectWithErrors {
+        val pollInfo = pollsMessagesTable[it.first.asPostId] ?: return@collectWithErrors
 
         executor.executeUnsafe(
             DeleteMessage(
