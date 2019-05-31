@@ -54,7 +54,7 @@ internal fun CoroutineScope.enableReenableRatingCommand(
         val postId = postsTable.findPost(repliedMessage.messageId)
         launch {
             ratingPlugin.allocateRatingRemovedFlow().first { _ ->
-                ratingPlugin.getPostRatings(postId).isNotEmpty()
+                ratingPlugin.getPostRatings(postId).isEmpty()
             }.collect {
                 ratingPlugin.addRatingFor(postId)
             }
