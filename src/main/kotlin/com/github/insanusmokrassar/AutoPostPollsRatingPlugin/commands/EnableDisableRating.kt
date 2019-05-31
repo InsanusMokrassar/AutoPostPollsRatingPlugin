@@ -52,9 +52,7 @@ internal fun CoroutineScope.enableReenableRatingCommand(
         ratingPlugin.getPostRatings(postId).forEach { (ratingId, _) ->
             ratingPlugin.deleteRating(ratingId)
         }
-        if (ratingPlugin.getPostRatings(postId).isEmpty()) {
-            ratingPlugin.addRatingFor(postId)
-        }
+        ratingPlugin.addRatingFor(postId)
     }
 }
 
