@@ -7,4 +7,3 @@
 ### 0.1.2
 
 * Now new polls will reply to first message of post
-* `reenableRating` command added

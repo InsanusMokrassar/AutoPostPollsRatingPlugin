@@ -91,11 +91,6 @@ class PollRatingPlugin(
                 PostsTable
             )
 
-            enableReenableRatingCommand(
-                this@PollRatingPlugin,
-                PostsTable
-            )
-
             enableGetRatingsCommand(
                 executor.asReference(),
                 this@PollRatingPlugin

@@ -42,26 +42,3 @@ internal fun CoroutineScope.enableDisableRatingCommand(
         }
     }
 }
-
-internal fun CoroutineScope.enableReenableRatingCommand(
-    ratingPlugin: MutableRatingPlugin,
-    postsTable: PostsTable
-): Job = launch {
-    buildCommandFlow(
-        reenableRatingCommandRegex
-    ).collectWithErrors {
-        val repliedMessage = it.replyTo ?: return@collectWithErrors
-        val postId = postsTable.findPost(repliedMessage.messageId)
-        launch {
-            ratingPlugin.allocateRatingRemovedFlow().first { _ ->
-                ratingPlugin.getPostRatings(postId).isEmpty()
-            }.collect {
-                ratingPlugin.addRatingFor(postId)
-            }
-        }
-        ratingPlugin.getPostRatings(postId).forEach { (ratingId, _) ->
-            ratingPlugin.deleteRating(ratingId)
-        }
-    }
-}
-
