@@ -7,8 +7,6 @@ import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
 import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
-import com.github.insanusmokrassar.TelegramBotAPI.requests.DeleteMessage
-import com.github.insanusmokrassar.TelegramBotAPI.requests.StopPoll
 import com.github.insanusmokrassar.TelegramBotAPI.requests.send.SendPoll
 import com.github.insanusmokrassar.TelegramBotAPI.types.ChatId
 import com.github.insanusmokrassar.TelegramBotAPI.types.message.abstracts.ContentMessage
@@ -41,14 +39,14 @@ internal fun CoroutineScope.enableAutoaddingOfPolls(
         options
     )
     ratingPlugin.allocateRatingAddedFlow().collectWithErrors { (postId, _) ->
-        val firstPostMessageId = postsMessagesTable.getMessagesOfPost(postId).firstOrNull()
+        val firstPostMessage = postsMessagesTable.getMessagesOfPost(postId).firstOrNull()
 
-        if (firstPostMessageId == null || postId in pollsMessagesTable) {
+        if (firstPostMessage == null || postId in pollsMessagesTable) {
             return@collectWithErrors
         }
 
         (executor.executeUnsafe(
-            sendPoll,
+            sendPoll.copy(replyToMessageId = firstPostMessage.messageId),
             3
         ) ?.asMessage as? ContentMessage<*>) ?.let {
             val pollContent = it.content as? PollContent ?: return@collectWithErrors
