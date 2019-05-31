@@ -8,6 +8,7 @@ import kotlinx.coroutines.*
 
 private val enableRatingCommandRegex = Regex("enableRating")
 private val disableRatingCommandRegex = Regex("disableRating")
+private val reenableRatingCommandRegex = Regex("reenableRating")
 
 internal fun CoroutineScope.enableEnableRatingCommand(
     ratingPlugin: MutableRatingPlugin,
@@ -35,6 +36,24 @@ internal fun CoroutineScope.enableDisableRatingCommand(
         val postId = postsTable.findPost(repliedMessage.messageId)
         ratingPlugin.getPostRatings(postId).forEach { (ratingId, _) ->
             ratingPlugin.deleteRating(ratingId)
+        }
+    }
+}
+
+internal fun CoroutineScope.enableReenableRatingCommand(
+    ratingPlugin: MutableRatingPlugin,
+    postsTable: PostsTable
+): Job = launch {
+    buildCommandFlow(
+        reenableRatingCommandRegex
+    ).collectWithErrors {
+        val repliedMessage = it.replyTo ?: return@collectWithErrors
+        val postId = postsTable.findPost(repliedMessage.messageId)
+        ratingPlugin.getPostRatings(postId).forEach { (ratingId, _) ->
+            ratingPlugin.deleteRating(ratingId)
+        }
+        if (ratingPlugin.getPostRatings(postId).isEmpty()) {
+            ratingPlugin.addRatingFor(postId)
         }
     }
 }
