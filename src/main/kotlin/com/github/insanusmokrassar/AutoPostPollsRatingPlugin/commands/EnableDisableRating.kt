@@ -52,10 +52,12 @@ internal fun CoroutineScope.enableReenableRatingCommand(
     ).collectWithErrors {
         val repliedMessage = it.replyTo ?: return@collectWithErrors
         val postId = postsTable.findPost(repliedMessage.messageId)
-        ratingPlugin.allocateRatingRemovedFlow().first { (ratingId, _) ->
-            ratingId.asPostId == postId || ratingPlugin.getPostRatings(postId).isNotEmpty()
-        }.collect {
-            ratingPlugin.addRatingFor(postId)
+        launch {
+            ratingPlugin.allocateRatingRemovedFlow().first { _ ->
+                ratingPlugin.getPostRatings(postId).isNotEmpty()
+            }.collect {
+                ratingPlugin.addRatingFor(postId)
+            }
         }
         ratingPlugin.getPostRatings(postId).forEach { (ratingId, _) ->
             ratingPlugin.deleteRating(ratingId)
