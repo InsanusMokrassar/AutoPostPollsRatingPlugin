@@ -1,13 +1,13 @@
 # AutoPostPollsRatingPlugin
 
+ [ ![Download](https://api.bintray.com/packages/insanusmokrassar/StandardRepository/AutoPostPollsRatingPlugin/images/download.svg) ](https://bintray.com/insanusmokrassar/StandardRepository/AutoPostPollsRatingPlugin/_latestVersion)
+
 This plugin was created for [AutoPostTelegramBot](https://github.com/InsanusMokrassar/AutoPostTelegramBot)
 
-## Examples
+## Why?
 
-The main ide of this plugin is to use default polls in Telegram as a tool for rating the posts.
+The main idea of this plugin is to use default polls in Telegram as a tool for rating the posts.
 Any answer in poll have its own rating value and will affect to result rating of post.
-
-
 
 ## Config
 
