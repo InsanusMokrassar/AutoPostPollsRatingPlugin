@@ -1,5 +1,9 @@
 # Changelog
 
+# 0.2.1
+
+* Fixes in automatic removes
+
 # 0.1.0
 
 ### 0.1.1

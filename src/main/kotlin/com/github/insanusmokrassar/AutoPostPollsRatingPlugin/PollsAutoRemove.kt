@@ -2,8 +2,7 @@ package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
 
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
 import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
 import com.github.insanusmokrassar.TelegramBotAPI.requests.DeleteMessage
@@ -18,6 +17,15 @@ internal fun CoroutineScope.enableAutoremovingOnPostRemoved(
     ratingPlugin: MutableRatingPlugin,
     postsTable: PostsTable
 ): Job = launch {
+    postsTable.getAll().also { posts ->
+        ratingPlugin.getRegisteredPosts().filter {
+            it !in posts
+        }.forEach {
+            ratingPlugin.getPostRatings(it).forEach {
+                ratingPlugin.deleteRating(it.first)
+            }
+        }
+    }
     postsTable.postRemovedChannel.asFlow().collectWithErrors {
         ratingPlugin.getPostRatings(it).forEach {
             ratingPlugin.deleteRating(it.first)
@@ -33,22 +41,32 @@ internal fun CoroutineScope.enableAutoremovingOfPolls(
     closeIfUnsuccess: Boolean = true
 ): Job = launch {
     ratingPlugin.allocateRatingRemovedFlow().collectWithErrors {
-        val pollInfo = pollsMessagesTable[it.first.asPostId] ?: return@collectWithErrors
+        removePoll(executor, chatId, closeIfUnsuccess, pollsMessagesTable, it)
+    }
+}
 
+private suspend fun removePoll(
+    executor: RequestsExecutor,
+    chatId: ChatId,
+    closeIfUnsuccess: Boolean,
+    pollsMessagesTable: PollsMessagesTable,
+    ratingPair: RatingPair
+) {
+    val pollInfo = pollsMessagesTable[ratingPair.first.asPostId] ?: return@removePoll
+
+    executor.executeUnsafe(
+        DeleteMessage(
+            chatId,
+            pollInfo.first
+        )
+    ) ?: if (closeIfUnsuccess) {
         executor.executeUnsafe(
-            DeleteMessage(
+            StopPoll(
                 chatId,
                 pollInfo.first
             )
-        ) ?: if (closeIfUnsuccess) {
-            executor.executeUnsafe(
-                StopPoll(
-                    chatId,
-                    pollInfo.first
-                )
-            )
-        }
-
-        pollsMessagesTable.unregisterPoll(it.first.asPostId)
+        )
     }
+
+    pollsMessagesTable.unregisterPoll(ratingPair.first.asPostId)
 }

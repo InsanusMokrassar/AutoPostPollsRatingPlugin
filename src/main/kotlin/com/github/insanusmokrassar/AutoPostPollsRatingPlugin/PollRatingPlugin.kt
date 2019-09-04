@@ -103,6 +103,15 @@ class PollRatingPlugin(
                 )
             }
         }
+
+        val postsIds = PostsTable.getAll()
+        getRegisteredPosts().filter {
+            it !in postsIds
+        }.forEach {
+            getPostRatings(it).forEach { (ratingId, _) ->
+                deleteRating(ratingId)
+            }
+        }
     }
 
     override suspend fun allocateRatingAddedFlow(): Flow<PostIdRatingIdPair> = pollsRatingsTable
