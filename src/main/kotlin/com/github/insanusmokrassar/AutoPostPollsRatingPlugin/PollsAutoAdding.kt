@@ -48,7 +48,7 @@ internal fun CoroutineScope.enableAutoaddingOfPolls(
         (executor.executeUnsafe(
             sendPoll.copy(replyToMessageId = firstPostMessage.messageId),
             3
-        ) ?.asMessage as? ContentMessage<*>) ?.let {
+        ) as? ContentMessage<*>) ?.let {
             val pollContent = it.content as? PollContent ?: return@collectWithErrors
             val poll = pollContent.poll
 
