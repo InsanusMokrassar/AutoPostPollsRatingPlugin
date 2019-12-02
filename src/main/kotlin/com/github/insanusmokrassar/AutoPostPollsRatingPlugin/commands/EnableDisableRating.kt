@@ -1,13 +1,10 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.commands
 
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.asPostId
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.utils.first
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.commands.buildCommandFlow
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
 
 private val enableRatingCommandRegex = Regex("enableRating")
 private val disableRatingCommandRegex = Regex("disableRating")
