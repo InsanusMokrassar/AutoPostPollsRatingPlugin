@@ -8,6 +8,11 @@
     * Serialization `0.11.1` -> inherited
     * AutoPostTelegramBot `1.5.1` -> `1.6.0`
 
+## 0.3.1
+
+* Versions update:
+    * AutoPostTelegramBot `1.6.0` -> `1.6.1`
+
 # 0.2.1
 
 * Fixes in automatic removes
