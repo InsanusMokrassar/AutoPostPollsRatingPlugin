@@ -1,5 +1,10 @@
 # Changelog
 
+# 0.5.0
+
+* Version updates
+    * AutoPostTelegramBot `1.7.0` -> `1.8.1`
+
 # 0.4.0
 
 * Version updates
