@@ -7,7 +7,7 @@ import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
 import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
-import com.github.insanusmokrassar.TelegramBotAPI.requests.send.SendPoll
+import com.github.insanusmokrassar.TelegramBotAPI.requests.send.polls.SendRegularPoll
 import com.github.insanusmokrassar.TelegramBotAPI.types.ChatId
 import com.github.insanusmokrassar.TelegramBotAPI.types.message.abstracts.ContentMessage
 import com.github.insanusmokrassar.TelegramBotAPI.types.message.content.PollContent
@@ -33,7 +33,7 @@ internal fun CoroutineScope.enableAutoaddingOfPolls(
     pollsMessagesTable: PollsMessagesTable,
     postsMessagesTable: PostsMessagesTable
 ): Job = launch {
-    val sendPoll = SendPoll(
+    val sendPoll = SendRegularPoll(
         chatId,
         text,
         options
