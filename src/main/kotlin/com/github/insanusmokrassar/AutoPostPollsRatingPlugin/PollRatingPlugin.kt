@@ -29,9 +29,9 @@ class PollRatingPlugin(
     private val variantsRatings: Boolean = false
 ) : MutableRatingPlugin {
     @Transient
-    private val pollsRatingsTable = PollsRatingsTable()
+    private lateinit var pollsRatingsTable: PollsRatingsTable
     @Transient
-    private val pollsMessagesTable = PollsMessagesTable()
+    private lateinit var pollsMessagesTable: PollsMessagesTable
 
     override suspend fun onInit(executor: RequestsExecutor, baseConfig: FinalConfig, pluginManager: PluginManager) {
         super.onInit(executor, baseConfig, pluginManager)
@@ -50,6 +50,9 @@ class PollRatingPlugin(
 
         val postsTable = baseConfig.postsTable
         val postsMessagesTable = baseConfig.postsMessagesTable
+
+        pollsRatingsTable = PollsRatingsTable(baseConfig.databaseConfig.database)
+        pollsMessagesTable = PollsMessagesTable(baseConfig.databaseConfig.database)
 
         NewDefaultCoroutineScope(8).apply {
             enableAutoremovingOfPolls(

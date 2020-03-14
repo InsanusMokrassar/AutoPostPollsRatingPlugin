@@ -9,7 +9,9 @@ import kotlinx.coroutines.channels.Channel
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-internal class PollsRatingsTable : Table() {
+internal class PollsRatingsTable(
+    private val database: Database
+) : Table() {
     internal val ratingChangedChannel = BroadcastChannel<RatingPair>(Channel.CONFLATED)
     internal val ratingEnabledChannel = BroadcastChannel<PostIdRatingIdPair>(Channel.CONFLATED)
     internal val ratingDisabledChannel = BroadcastChannel<RatingPair>(Channel.CONFLATED)
@@ -22,18 +24,18 @@ internal class PollsRatingsTable : Table() {
     private val ratingColumn = integer("rating").default(0)
 
     init {
-        transaction {
+        transaction(database) {
             SchemaUtils.createMissingTablesAndColumns(this@PollsRatingsTable)
         }
     }
 
-    operator fun contains(postId: PostId): Boolean = transaction {
+    operator fun contains(postId: PostId): Boolean = transaction(database) {
         select {
             postIdColumn.eq(postId)
         }.firstOrNull() != null
     }
 
-    fun enableRating(postId: PostId): Boolean = transaction {
+    fun enableRating(postId: PostId): Boolean = transaction(database) {
         if (postId !in this@PollsRatingsTable) {
             insert {
                 it[postIdColumn] = postId
@@ -48,7 +50,7 @@ internal class PollsRatingsTable : Table() {
         }
     }
 
-    fun upsertRating(postId: PostId, rating: Rating) = transaction {
+    fun upsertRating(postId: PostId, rating: Rating) = transaction(database) {
         if (!updateRating(postId, rating)) {
             insert {
                 it[postIdColumn] = postId
@@ -60,7 +62,7 @@ internal class PollsRatingsTable : Table() {
         }
     }
 
-    fun updateRating(postId: PostId, rating: Rating): Boolean = transaction {
+    fun updateRating(postId: PostId, rating: Rating): Boolean = transaction(database) {
         update(
             {
                 postIdColumn.eq(postId)
@@ -74,7 +76,7 @@ internal class PollsRatingsTable : Table() {
         }
     }
 
-    operator fun get(postId: PostId): Rating? = transaction {
+    operator fun get(postId: PostId): Rating? = transaction(database) {
         select {
             postIdColumn.eq(postId)
         }.firstOrNull() ?.get(ratingColumn) ?.let {
@@ -84,7 +86,7 @@ internal class PollsRatingsTable : Table() {
 
     operator fun set(postId: PostId, rating: Rating): Boolean = upsertRating(postId, rating)
 
-    fun disableRating(postId: PostId): Rating? = transaction {
+    fun disableRating(postId: PostId): Rating? = transaction(database) {
         get(postId) ?.also {
             deleteWhere {
                 postIdColumn.eq(postId)
@@ -94,7 +96,7 @@ internal class PollsRatingsTable : Table() {
         ratingDisabledChannel.offer(postId.asRatingId to it)
     }
 
-    fun enabledRatings(): List<PostId> = transaction {
+    fun enabledRatings(): List<PostId> = transaction(database) {
         selectAll().map {
             it[postIdColumn]
         }

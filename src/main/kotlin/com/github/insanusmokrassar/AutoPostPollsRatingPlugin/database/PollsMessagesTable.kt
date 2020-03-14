@@ -9,24 +9,26 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 internal typealias MessageIdToPollIdPair = Pair<MessageIdentifier, PollIdentifier>
 
-internal class PollsMessagesTable : Table() {
+internal class PollsMessagesTable(
+    private val database: Database
+) : Table() {
     private val postIdColumn = integer("postId").uniqueIndex()
     private val messageIdColumn = long("messageId").uniqueIndex()
     private val pollIdColumn = text("pollId")
 
     init {
-        transaction {
+        transaction(database) {
             SchemaUtils.createMissingTablesAndColumns(this@PollsMessagesTable)
         }
     }
 
-    operator fun contains(postId: PostId): Boolean = transaction {
+    operator fun contains(postId: PostId): Boolean = transaction(database) {
         select {
             postIdColumn.eq(postId)
         }.firstOrNull() != null
     }
 
-    fun registerPoll(postId: PostId, messageId: MessageIdentifier, pollId: PollIdentifier): Boolean = transaction {
+    fun registerPoll(postId: PostId, messageId: MessageIdentifier, pollId: PollIdentifier): Boolean = transaction(database) {
         if (postId !in this@PollsMessagesTable) {
             insert {
                 it[postIdColumn] = postId
@@ -39,7 +41,7 @@ internal class PollsMessagesTable : Table() {
         }
     }
 
-    operator fun get(postId: PostId): MessageIdToPollIdPair? = transaction {
+    operator fun get(postId: PostId): MessageIdToPollIdPair? = transaction(database) {
         select {
             postIdColumn.eq(postId)
         }.firstOrNull() ?.let {
@@ -47,13 +49,13 @@ internal class PollsMessagesTable : Table() {
         }
     }
 
-    operator fun get(pollId: PollIdentifier): PostId? = transaction {
+    operator fun get(pollId: PollIdentifier): PostId? = transaction(database) {
         select {
             pollIdColumn.eq(pollId)
         }.firstOrNull() ?.get(postIdColumn)
     }
 
-    fun unregisterPoll(postId: PostId): MessageIdToPollIdPair? = transaction {
+    fun unregisterPoll(postId: PostId): MessageIdToPollIdPair? = transaction(database) {
         get(postId) ?.also {
             deleteWhere {
                 postIdColumn.eq(postId)
@@ -61,7 +63,7 @@ internal class PollsMessagesTable : Table() {
         }
     }
 
-    fun registeredPolls(): List<PostId> = transaction {
+    fun registeredPolls(): List<PostId> = transaction(database) {
         selectAll().map {
             it[postIdColumn]
         }
