@@ -48,6 +48,9 @@ class PollRatingPlugin(
             } to rating
         }
 
+        val postsTable = baseConfig.postsTable
+        val postsMessagesTable = baseConfig.postsMessagesTable
+
         NewDefaultCoroutineScope(8).apply {
             enableAutoremovingOfPolls(
                 executor,
@@ -58,7 +61,7 @@ class PollRatingPlugin(
 
             enableAutoremovingOnPostRemoved(
                 this@PollRatingPlugin,
-                PostsTable
+                postsTable
             )
 
             enableAutoaddingOfPolls(
@@ -72,7 +75,7 @@ class PollRatingPlugin(
                 }).keys.toList(),
                 text,
                 pollsMessagesTable,
-                PostsMessagesTable
+                postsMessagesTable
             )
 
             enableRatingUpdatesByPolls(
@@ -83,12 +86,12 @@ class PollRatingPlugin(
 
             enableEnableRatingCommand(
                 this@PollRatingPlugin,
-                PostsTable
+                postsTable
             )
 
             enableDisableRatingCommand(
                 this@PollRatingPlugin,
-                PostsTable
+                postsTable
             )
 
             enableGetRatingsCommand(
@@ -98,13 +101,13 @@ class PollRatingPlugin(
 
             if (autoAttach) {
                 enableAutoEnablingOfPolls(
-                    PostsTable,
+                    postsTable,
                     this@PollRatingPlugin
                 )
             }
         }
 
-        val postsIds = PostsTable.getAll()
+        val postsIds = postsTable.getAll()
         getRegisteredPosts().filter {
             it !in postsIds
         }.forEach {
