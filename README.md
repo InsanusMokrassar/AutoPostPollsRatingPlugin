@@ -1,6 +1,7 @@
 # AutoPostPollsRatingPlugin
 
  [ ![Download](https://api.bintray.com/packages/insanusmokrassar/StandardRepository/AutoPostPollsRatingPlugin/images/download.svg) ](https://bintray.com/insanusmokrassar/StandardRepository/AutoPostPollsRatingPlugin/_latestVersion)
+ [![Build Status](https://travis-ci.com/InsanusMokrassar/AutoPostPollsRatingPlugin.svg?branch=master)](https://travis-ci.com/InsanusMokrassar/AutoPostPollsRatingPlugin)
 
 This plugin was created for [AutoPostTelegramBot](https://github.com/InsanusMokrassar/AutoPostTelegramBot)
 
