@@ -1,7 +1,6 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database
 
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.Rating
 import com.github.insanusmokrassar.TelegramBotAPI.types.MessageIdentifier
 import com.github.insanusmokrassar.TelegramBotAPI.types.PollIdentifier
 import org.jetbrains.exposed.sql.*

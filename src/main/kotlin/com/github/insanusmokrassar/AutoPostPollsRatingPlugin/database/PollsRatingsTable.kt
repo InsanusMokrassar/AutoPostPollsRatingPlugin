@@ -1,7 +1,6 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database
 
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.*
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.asRatingId
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
 import kotlinx.coroutines.channels.BroadcastChannel

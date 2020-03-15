@@ -1,7 +1,6 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.commands
 
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsBaseInfoTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.commands.buildCommandFlow
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
