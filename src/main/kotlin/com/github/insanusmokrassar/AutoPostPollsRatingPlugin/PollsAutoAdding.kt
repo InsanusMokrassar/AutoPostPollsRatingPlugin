@@ -1,8 +1,7 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
 
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsMessagesTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.*
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
@@ -16,7 +15,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asFlow
 
 internal fun CoroutineScope.enableAutoEnablingOfPolls(
-    postsTable: PostsTable,
+    postsTable: PostsBaseInfoTable,
     ratingPlugin: MutableRatingPlugin
 ): Job = launch {
     postsTable.postMessageRegisteredChannel.asFlow().collectWithErrors {
@@ -31,7 +30,7 @@ internal fun CoroutineScope.enableAutoaddingOfPolls(
     options: List<String>,
     text: String,
     pollsMessagesTable: PollsMessagesTable,
-    postsMessagesTable: PostsMessagesTable
+    postsMessagesTable: PostsMessagesInfoTable
 ): Job = launch {
     val sendPoll = SendRegularPoll(
         chatId,

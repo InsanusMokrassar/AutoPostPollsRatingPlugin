@@ -1,6 +1,7 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
 
 import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsBaseInfoTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.collect
 
 internal fun CoroutineScope.enableAutoremovingOnPostRemoved(
     ratingPlugin: MutableRatingPlugin,
-    postsTable: PostsTable
+    postsTable: PostsBaseInfoTable
 ): Job = launch {
     postsTable.getAll().also { posts ->
         ratingPlugin.getRegisteredPosts().filter {

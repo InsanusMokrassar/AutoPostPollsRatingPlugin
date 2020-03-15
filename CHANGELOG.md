@@ -5,6 +5,11 @@
 * Version updates
     * AutoPostTelegramBot `1.7.0` -> `1.8.1`
 
+## 0.5.1
+
+* Version updates
+    * AutoPostTelegramBot `1.8.1` -> `1.8.2`
+
 # 0.4.0
 
 * Version updates

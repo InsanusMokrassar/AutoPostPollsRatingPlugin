@@ -6,7 +6,7 @@ import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.commands.buildCommandFlow
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
 import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
-import com.github.insanusmokrassar.TelegramBotAPI.requests.send.SendMessage
+import com.github.insanusmokrassar.TelegramBotAPI.requests.send.SendTextMessage
 import com.github.insanusmokrassar.TelegramBotAPI.types.ParseMode.Markdown
 import com.github.insanusmokrassar.TelegramBotAPI.utils.boldMarkdown
 import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.executeUnsafe
@@ -49,7 +49,7 @@ internal fun CoroutineScope.enableGetRatingsCommand(
             messageBuilder.append("Ratings count:   ${averageRatings.size};\n")
 
             executor.executeUnsafe(
-                SendMessage(
+                SendTextMessage(
                     it.chat.id,
                     messageBuilder.toString(),
                     Markdown,

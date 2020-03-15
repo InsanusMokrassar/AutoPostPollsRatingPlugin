@@ -1,5 +1,6 @@
 package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.commands
 
+import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsBaseInfoTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsTable
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.commands.buildCommandFlow
@@ -12,7 +13,7 @@ private val reenableRatingCommandRegex = Regex("reenableRating")
 
 internal fun CoroutineScope.enableEnableRatingCommand(
     ratingPlugin: MutableRatingPlugin,
-    postsTable: PostsTable
+    postsTable: PostsBaseInfoTable
 ): Job = launch {
     buildCommandFlow(
         enableRatingCommandRegex
@@ -27,7 +28,7 @@ internal fun CoroutineScope.enableEnableRatingCommand(
 
 internal fun CoroutineScope.enableDisableRatingCommand(
     ratingPlugin: MutableRatingPlugin,
-    postsTable: PostsTable
+    postsTable: PostsBaseInfoTable
 ): Job = launch {
     buildCommandFlow(
         disableRatingCommandRegex

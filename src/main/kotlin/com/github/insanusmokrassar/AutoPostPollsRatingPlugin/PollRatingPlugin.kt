@@ -12,6 +12,7 @@ import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.PluginManager
 import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
 import com.github.insanusmokrassar.AutoPostTelegramBot.utils.NewDefaultCoroutineScope
+import com.github.insanusmokrassar.AutoPostTelegramBot.utils.SafeLazy
 import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
 import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.asReference
 import kotlinx.coroutines.flow.*
@@ -29,9 +30,11 @@ class PollRatingPlugin(
     private val variantsRatings: Boolean = false
 ) : MutableRatingPlugin {
     @Transient
-    private val pollsRatingsTable = PollsRatingsTable()
+    private val scope = NewDefaultCoroutineScope(8)
     @Transient
-    private val pollsMessagesTable = PollsMessagesTable()
+    private val pollsRatingsTable = SafeLazy<PollsRatingsTable>(scope)
+    @Transient
+    private val pollsMessagesTable = SafeLazy<PollsMessagesTable>(scope)
 
     override suspend fun onInit(executor: RequestsExecutor, baseConfig: FinalConfig, pluginManager: PluginManager) {
         super.onInit(executor, baseConfig, pluginManager)
@@ -48,17 +51,23 @@ class PollRatingPlugin(
             } to rating
         }
 
+        val postsTable = baseConfig.postsTable
+        val postsMessagesTable = baseConfig.postsMessagesTable
+
+        pollsRatingsTable.set(PollsRatingsTable(baseConfig.databaseConfig.database))
+        pollsMessagesTable.set(PollsMessagesTable(baseConfig.databaseConfig.database))
+
         NewDefaultCoroutineScope(8).apply {
             enableAutoremovingOfPolls(
                 executor,
                 baseConfig.sourceChatId,
                 this@PollRatingPlugin,
-                pollsMessagesTable
+                pollsMessagesTable.get()
             )
 
             enableAutoremovingOnPostRemoved(
                 this@PollRatingPlugin,
-                PostsTable
+                postsTable
             )
 
             enableAutoaddingOfPolls(
@@ -71,24 +80,24 @@ class PollRatingPlugin(
                     ratingVariants
                 }).keys.toList(),
                 text,
-                pollsMessagesTable,
-                PostsMessagesTable
+                pollsMessagesTable.get(),
+                postsMessagesTable
             )
 
             enableRatingUpdatesByPolls(
                 ratingsTransformers,
-                pollsRatingsTable,
-                pollsMessagesTable
+                pollsRatingsTable.get(),
+                pollsMessagesTable.get()
             )
 
             enableEnableRatingCommand(
                 this@PollRatingPlugin,
-                PostsTable
+                postsTable
             )
 
             enableDisableRatingCommand(
                 this@PollRatingPlugin,
-                PostsTable
+                postsTable
             )
 
             enableGetRatingsCommand(
@@ -98,13 +107,13 @@ class PollRatingPlugin(
 
             if (autoAttach) {
                 enableAutoEnablingOfPolls(
-                    PostsTable,
+                    postsTable,
                     this@PollRatingPlugin
                 )
             }
         }
 
-        val postsIds = PostsTable.getAll()
+        val postsIds = postsTable.getAll()
         getRegisteredPosts().filter {
             it !in postsIds
         }.forEach {
@@ -114,38 +123,38 @@ class PollRatingPlugin(
         }
     }
 
-    override suspend fun allocateRatingAddedFlow(): Flow<PostIdRatingIdPair> = pollsRatingsTable
+    override suspend fun allocateRatingAddedFlow(): Flow<PostIdRatingIdPair> = pollsRatingsTable.get()
         .ratingEnabledChannel
         .asFlow()
 
-    override suspend fun allocateRatingChangedFlow(): Flow<RatingPair> = pollsRatingsTable
+    override suspend fun allocateRatingChangedFlow(): Flow<RatingPair> = pollsRatingsTable.get()
         .ratingChangedChannel
         .asFlow()
 
-    override suspend fun allocateRatingRemovedFlow(): Flow<RatingPair> = pollsRatingsTable
+    override suspend fun allocateRatingRemovedFlow(): Flow<RatingPair> = pollsRatingsTable.get()
         .ratingDisabledChannel
         .asFlow()
 
     override suspend fun getPostRatings(postId: PostId): List<RatingPair> = listOfNotNull(
-        pollsRatingsTable[postId] ?.let {
+        pollsRatingsTable.get()[postId] ?.let {
             postId.asRatingId to it
         }
     )
 
-    override suspend fun getRatingById(ratingId: RatingId): Rating? = pollsRatingsTable[ratingId.asPostId]
+    override suspend fun getRatingById(ratingId: RatingId): Rating? = pollsRatingsTable.get()[ratingId.asPostId]
 
-    override suspend fun getRegisteredPosts(): List<PostId> = pollsRatingsTable.enabledRatings()
+    override suspend fun getRegisteredPosts(): List<PostId> = pollsRatingsTable.get().enabledRatings()
 
     override suspend fun resolvePostId(ratingId: RatingId): PostId? {
         val asPostId = ratingId.asPostId
-        return if (asPostId in pollsRatingsTable) {
+        return if (asPostId in pollsRatingsTable.get()) {
             asPostId
         } else {
             null
         }
     }
 
-    override suspend fun addRatingFor(postId: PostId): RatingId? = pollsRatingsTable.enableRating(
+    override suspend fun addRatingFor(postId: PostId): RatingId? = pollsRatingsTable.get().enableRating(
         postId
     ).let {
         if (it) {
@@ -156,6 +165,6 @@ class PollRatingPlugin(
     }
 
     override suspend fun deleteRating(ratingId: RatingId) {
-        pollsRatingsTable.disableRating(ratingId.asPostId)
+        pollsRatingsTable.get().disableRating(ratingId.asPostId)
     }
 }
