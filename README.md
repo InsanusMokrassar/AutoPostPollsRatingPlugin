@@ -46,7 +46,7 @@ In plugins section add:
 
 ```json
 [
-    "com.github.insanusmokrassar.AutoPostPollsRatingPlugin.PollRatingPlugin",
+    "dev.inmo.AutoPostPollsRatingPlugin.PollRatingPlugin",
     {
         "ratingVariants": {
             "Left for near": 1,

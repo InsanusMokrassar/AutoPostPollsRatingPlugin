@@ -1,8 +1,8 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database
+package dev.inmo.AutoPostPollsRatingPlugin.database
 
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.*
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
+import dev.inmo.AutoPostPollsRatingPlugin.*
+import dev.inmo.AutoPostTelegramBot.base.models.PostId
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import org.jetbrains.exposed.sql.*

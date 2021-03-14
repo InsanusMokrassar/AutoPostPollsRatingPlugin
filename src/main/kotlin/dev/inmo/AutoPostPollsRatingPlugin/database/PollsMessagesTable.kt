@@ -1,8 +1,8 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database
+package dev.inmo.AutoPostPollsRatingPlugin.database
 
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
-import com.github.insanusmokrassar.TelegramBotAPI.types.MessageIdentifier
-import com.github.insanusmokrassar.TelegramBotAPI.types.PollIdentifier
+import dev.inmo.AutoPostTelegramBot.base.models.PostId
+import dev.inmo.tgbotapi.types.MessageIdentifier
+import dev.inmo.tgbotapi.types.PollIdentifier
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 

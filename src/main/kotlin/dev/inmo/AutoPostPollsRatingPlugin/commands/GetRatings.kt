@@ -1,15 +1,15 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.commands
+package dev.inmo.AutoPostPollsRatingPlugin.commands
 
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.sumBy
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.Rating
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
-import com.github.insanusmokrassar.AutoPostTelegramBot.utils.commands.buildCommandFlow
-import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
-import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
-import com.github.insanusmokrassar.TelegramBotAPI.requests.send.SendTextMessage
-import com.github.insanusmokrassar.TelegramBotAPI.types.ParseMode.Markdown
-import com.github.insanusmokrassar.TelegramBotAPI.utils.boldMarkdown
-import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.executeUnsafe
+import dev.inmo.AutoPostPollsRatingPlugin.sumBy
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.Rating
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
+import dev.inmo.AutoPostTelegramBot.utils.commands.buildCommandFlow
+import dev.inmo.AutoPostTelegramBot.utils.flow.collectWithErrors
+import dev.inmo.tgbotapi.bot.RequestsExecutor
+import dev.inmo.tgbotapi.extensions.utils.formatting.boldMarkdown
+import dev.inmo.tgbotapi.extensions.utils.shortcuts.executeUnsafe
+import dev.inmo.tgbotapi.requests.send.SendTextMessage
+import dev.inmo.tgbotapi.types.ParseMode.Markdown
 import kotlinx.coroutines.*
 import java.lang.ref.WeakReference
 

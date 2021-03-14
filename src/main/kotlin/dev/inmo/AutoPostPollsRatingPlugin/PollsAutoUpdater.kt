@@ -1,9 +1,9 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
+package dev.inmo.AutoPostPollsRatingPlugin
 
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsRatingsTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.flowFilter
-import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
+import dev.inmo.AutoPostPollsRatingPlugin.database.PollsMessagesTable
+import dev.inmo.AutoPostPollsRatingPlugin.database.PollsRatingsTable
+import dev.inmo.AutoPostTelegramBot.flowFilter
+import dev.inmo.AutoPostTelegramBot.utils.flow.collectWithErrors
 import kotlinx.coroutines.*
 
 internal fun CoroutineScope.enableRatingUpdatesByPolls(

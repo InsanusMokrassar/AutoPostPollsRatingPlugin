@@ -1,6 +1,6 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
+package dev.inmo.AutoPostPollsRatingPlugin
 
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.Rating
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.Rating
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.builtins.MapSerializer
