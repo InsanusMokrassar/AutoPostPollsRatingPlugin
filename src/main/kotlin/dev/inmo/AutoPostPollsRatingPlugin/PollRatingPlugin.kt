@@ -12,7 +12,7 @@ import dev.inmo.AutoPostTelegramBot.utils.SafeLazy
 import dev.inmo.tgbotapi.bot.RequestsExecutor
 import dev.inmo.tgbotapi.utils.extensions.asReference
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -121,16 +121,16 @@ class PollRatingPlugin(
     }
 
     override suspend fun allocateRatingAddedFlow(): Flow<PostIdRatingIdPair> = pollsRatingsTable.get()
-        .ratingEnabledChannel
-        .asFlow()
+        .ratingEnabledFlow
+        .asSharedFlow()
 
     override suspend fun allocateRatingChangedFlow(): Flow<RatingPair> = pollsRatingsTable.get()
-        .ratingChangedChannel
-        .asFlow()
+        .ratingChangedFlow
+        .asSharedFlow()
 
     override suspend fun allocateRatingRemovedFlow(): Flow<RatingPair> = pollsRatingsTable.get()
-        .ratingDisabledChannel
-        .asFlow()
+        .ratingDisabledFlow
+        .asSharedFlow()
 
     override suspend fun getPostRatings(postId: PostId): List<RatingPair> = listOfNotNull(
         pollsRatingsTable.get()[postId] ?.let {
