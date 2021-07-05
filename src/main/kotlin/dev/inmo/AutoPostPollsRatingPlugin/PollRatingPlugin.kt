@@ -1,18 +1,18 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
+package dev.inmo.AutoPostPollsRatingPlugin
 
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.commands.*
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsRatingsTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.FinalConfig
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.PluginManager
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
-import com.github.insanusmokrassar.AutoPostTelegramBot.utils.NewDefaultCoroutineScope
-import com.github.insanusmokrassar.AutoPostTelegramBot.utils.SafeLazy
-import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
-import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.asReference
+import dev.inmo.AutoPostPollsRatingPlugin.commands.*
+import dev.inmo.AutoPostPollsRatingPlugin.database.PollsMessagesTable
+import dev.inmo.AutoPostPollsRatingPlugin.database.PollsRatingsTable
+import dev.inmo.AutoPostTelegramBot.base.models.FinalConfig
+import dev.inmo.AutoPostTelegramBot.base.models.PostId
+import dev.inmo.AutoPostTelegramBot.base.plugins.PluginManager
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.*
+import dev.inmo.AutoPostTelegramBot.utils.NewDefaultCoroutineScope
+import dev.inmo.AutoPostTelegramBot.utils.SafeLazy
+import dev.inmo.tgbotapi.bot.RequestsExecutor
+import dev.inmo.tgbotapi.utils.extensions.asReference
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
@@ -121,16 +121,16 @@ class PollRatingPlugin(
     }
 
     override suspend fun allocateRatingAddedFlow(): Flow<PostIdRatingIdPair> = pollsRatingsTable.get()
-        .ratingEnabledChannel
-        .asFlow()
+        .ratingEnabledFlow
+        .asSharedFlow()
 
     override suspend fun allocateRatingChangedFlow(): Flow<RatingPair> = pollsRatingsTable.get()
-        .ratingChangedChannel
-        .asFlow()
+        .ratingChangedFlow
+        .asSharedFlow()
 
     override suspend fun allocateRatingRemovedFlow(): Flow<RatingPair> = pollsRatingsTable.get()
-        .ratingDisabledChannel
-        .asFlow()
+        .ratingDisabledFlow
+        .asSharedFlow()
 
     override suspend fun getPostRatings(postId: PostId): List<RatingPair> = listOfNotNull(
         pollsRatingsTable.get()[postId] ?.let {

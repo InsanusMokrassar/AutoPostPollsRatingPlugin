@@ -1,17 +1,17 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
+package dev.inmo.AutoPostPollsRatingPlugin
 
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsBaseInfoTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsMessagesInfoTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
-import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
-import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
-import com.github.insanusmokrassar.TelegramBotAPI.requests.send.polls.SendRegularPoll
-import com.github.insanusmokrassar.TelegramBotAPI.types.ChatId
-import com.github.insanusmokrassar.TelegramBotAPI.types.message.abstracts.ContentMessage
-import com.github.insanusmokrassar.TelegramBotAPI.types.message.content.PollContent
-import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.executeUnsafe
+import dev.inmo.AutoPostPollsRatingPlugin.database.PollsMessagesTable
+import dev.inmo.AutoPostTelegramBot.base.database.tables.PostsBaseInfoTable
+import dev.inmo.AutoPostTelegramBot.base.database.tables.PostsMessagesInfoTable
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.MutableRatingPlugin
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.RatingPlugin
+import dev.inmo.AutoPostTelegramBot.utils.flow.collectWithErrors
+import dev.inmo.tgbotapi.bot.RequestsExecutor
+import dev.inmo.tgbotapi.extensions.utils.shortcuts.executeUnsafe
+import dev.inmo.tgbotapi.requests.send.polls.SendRegularPoll
+import dev.inmo.tgbotapi.types.ChatId
+import dev.inmo.tgbotapi.types.message.abstracts.ContentMessage
+import dev.inmo.tgbotapi.types.message.content.PollContent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asFlow
 

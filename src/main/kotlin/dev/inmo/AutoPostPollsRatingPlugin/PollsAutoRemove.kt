@@ -1,14 +1,14 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
+package dev.inmo.AutoPostPollsRatingPlugin
 
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database.PollsMessagesTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.database.tables.PostsBaseInfoTable
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
-import com.github.insanusmokrassar.AutoPostTelegramBot.utils.flow.collectWithErrors
-import com.github.insanusmokrassar.TelegramBotAPI.bot.RequestsExecutor
-import com.github.insanusmokrassar.TelegramBotAPI.requests.DeleteMessage
-import com.github.insanusmokrassar.TelegramBotAPI.requests.StopPoll
-import com.github.insanusmokrassar.TelegramBotAPI.types.ChatId
-import com.github.insanusmokrassar.TelegramBotAPI.utils.extensions.executeUnsafe
+import dev.inmo.AutoPostPollsRatingPlugin.database.PollsMessagesTable
+import dev.inmo.AutoPostTelegramBot.base.database.tables.PostsBaseInfoTable
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.*
+import dev.inmo.AutoPostTelegramBot.utils.flow.collectWithErrors
+import dev.inmo.tgbotapi.bot.RequestsExecutor
+import dev.inmo.tgbotapi.extensions.utils.shortcuts.executeUnsafe
+import dev.inmo.tgbotapi.requests.DeleteMessage
+import dev.inmo.tgbotapi.requests.StopPoll
+import dev.inmo.tgbotapi.types.ChatId
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asFlow
 

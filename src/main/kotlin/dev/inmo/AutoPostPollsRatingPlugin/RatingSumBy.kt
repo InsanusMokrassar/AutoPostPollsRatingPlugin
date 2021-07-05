@@ -1,6 +1,6 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin
+package dev.inmo.AutoPostPollsRatingPlugin
 
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.Rating
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.Rating
 
 /**
  * Returns the sum of all values produced by [selector] function applied to each element in the collection.

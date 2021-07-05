@@ -1,21 +1,22 @@
-package com.github.insanusmokrassar.AutoPostPollsRatingPlugin.database
+package dev.inmo.AutoPostPollsRatingPlugin.database
 
-import com.github.insanusmokrassar.AutoPostPollsRatingPlugin.*
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.models.PostId
-import com.github.insanusmokrassar.AutoPostTelegramBot.base.plugins.abstractions.*
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
+import dev.inmo.AutoPostPollsRatingPlugin.*
+import dev.inmo.AutoPostTelegramBot.base.models.PostId
+import dev.inmo.AutoPostTelegramBot.base.plugins.abstractions.*
+import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class PollsRatingsTable(
     private val database: Database
 ) : Table() {
-    internal val ratingChangedChannel = BroadcastChannel<RatingPair>(Channel.CONFLATED)
-    internal val ratingEnabledChannel = BroadcastChannel<PostIdRatingIdPair>(Channel.CONFLATED)
-    internal val ratingDisabledChannel = BroadcastChannel<RatingPair>(Channel.CONFLATED)
+    internal val ratingChangedFlow = MutableSharedFlow<RatingPair>(0, Int.MAX_VALUE, BufferOverflow.SUSPEND)
+    internal val ratingEnabledFlow = MutableSharedFlow<PostIdRatingIdPair>(0, Int.MAX_VALUE, BufferOverflow.SUSPEND)
+    internal val ratingDisabledFlow = MutableSharedFlow<RatingPair>(0, Int.MAX_VALUE, BufferOverflow.SUSPEND)
 
-    private val postIdColumn = integer("postId").primaryKey()
+    private val postIdColumn = integer("postId")
+    override val primaryKey: PrimaryKey = PrimaryKey(postIdColumn)
 
     /**
      * For case, of rating 56.23, will be stored 5623
@@ -45,7 +46,7 @@ internal class PollsRatingsTable(
         }
     }.also {
         if (it) {
-            ratingEnabledChannel.offer(postId to postId.asRatingId)
+            ratingEnabledFlow.tryEmit(postId to postId.asRatingId)
         }
     }
 
@@ -71,7 +72,7 @@ internal class PollsRatingsTable(
         } > 0
     }.also {
         if (it) {
-            ratingChangedChannel.offer(postId.asRatingId to rating)
+            ratingChangedFlow.tryEmit(postId.asRatingId to rating)
         }
     }
 
@@ -92,7 +93,7 @@ internal class PollsRatingsTable(
             }
         }
     } ?.also {
-        ratingDisabledChannel.offer(postId.asRatingId to it)
+        ratingDisabledFlow.tryEmit(postId.asRatingId to it)
     }
 
     fun enabledRatings(): List<PostId> = transaction(database) {
